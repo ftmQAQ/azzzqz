@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.azzzqz">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/keli"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Azzzqz"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".BiliActivity"></activity>
+        <activity android:name=".SelfActivity" />
+        <activity android:name=".ContentActivity" />
+        <activity android:name=".AddFriendRequestActivity" />
+        <activity android:name=".AddFriendActivity" />
+        <activity android:name=".logreg.RegSuccessActivity" />
+        <activity android:name=".logreg.RegisterActivity" />
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".logreg.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

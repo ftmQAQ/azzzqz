@@ -1,0 +1,3 @@
+include ':musicplay'
+include ':app'
+rootProject.name = "azzzqz"

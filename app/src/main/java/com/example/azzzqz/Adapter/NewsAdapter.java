@@ -18,8 +18,8 @@ import androidx.annotation.Nullable;
 
 import com.example.azzzqz.ContentActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.News;
-import com.example.azzzqz.task.ImageTask;
+import com.example.azzzqz.Javabean.News;
+import com.example.azzzqz.Task.ImageTask;
 
 import java.util.List;
 
@@ -89,7 +89,6 @@ public class NewsAdapter extends ArrayAdapter {
             tv_tname=(TextView) view.findViewById(R.id.tv_tname);
             tv_ownername=(TextView)view.findViewById(R.id.tv_ownername);
             iv_image=(ImageView)view.findViewById(R.id.iv_image);
-
         }
     }
 }

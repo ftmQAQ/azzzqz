@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.azzzqz.Adapter.NewsAdapter;
-import com.example.azzzqz.javabean.News;
-import com.example.azzzqz.task.NewsTask;
+import com.example.azzzqz.Javabean.News;
+import com.example.azzzqz.Task.NewsTask;
 
 import java.util.ArrayList;
 

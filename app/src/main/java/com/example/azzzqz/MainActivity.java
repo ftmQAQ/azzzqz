@@ -7,18 +7,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
@@ -26,9 +23,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.azzzqz.fragment.DynamicFragment;
-import com.example.azzzqz.fragment.FriendFragment;
-import com.example.azzzqz.fragment.MsgFragment;
+import com.example.azzzqz.WebSocket.MyWebSocket;
+import com.example.azzzqz.Fragment.DynamicFragment;
+import com.example.azzzqz.Fragment.FriendFragment;
+import com.example.azzzqz.Fragment.MsgFragment;
 import com.example.azzzqz.logreg.LoginActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -58,19 +56,42 @@ public class MainActivity extends AppCompatActivity {
     //spf数据库
     SharedPreferences spf;
     SharedPreferences.Editor editor;
+    //判断socket通信是否需要开启
+    Boolean socket_flag=true;
+    //个人数据
+    String account;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        spf= PreferenceManager.getDefaultSharedPreferences(this);//打开本地存储的spf数据
+        spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
+        account=spf.getString("account","");
         minmain_username= findViewById(R.id.minmain_username);
         minmain_account=findViewById(R.id.minmain_account);
         main_title=findViewById(R.id.main_title);
         minmain_username.setText(spf.getString("username",""));
-        minmain_account.setText("蹦蹦号: "+spf.getString("account",""));
+        minmain_account.setText("蹦蹦号: "+account);
         im_exit=findViewById(R.id.im_exit);
         tx=findViewById(R.id.test);
         drawer=findViewById(R.id.drawer);
+        /**
+         * 创建线程连接websocket获取数据
+         */
+//        new Thread(new Runnable() {//开启一个心跳，同时回好友申请的数量
+//            @Override
+//            public void run() {
+//                MyWebSocket socket=new MyWebSocket();
+//                while(socket_flag){
+//                    try {
+//                        Thread.sleep(10000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    socket.send(account);
+//                }
+//                socket.close();
+//            }
+//        }).start();
         /**
          * 主菜单
          */
@@ -169,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
-        //标题
+        //下标题
         tab_title_list.add("消息");
         tab_title_list.add("好友");
         tab_title_list.add("动态");
@@ -246,6 +267,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socket_flag=false;
+    }
+
     public void setCurDot(int index) {
         dots[index].setEnabled(false);
         dots[cur].setEnabled(true);

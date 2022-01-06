@@ -1,10 +1,10 @@
-package com.example.azzzqz.task;
+package com.example.azzzqz.Task;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import com.example.azzzqz.utils.Utils;
+import com.example.azzzqz.Utils.Utils;
 
 import java.io.IOException;
 

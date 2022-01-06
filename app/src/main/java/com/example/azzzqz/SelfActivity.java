@@ -2,6 +2,7 @@ package com.example.azzzqz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,7 +24,7 @@ public class SelfActivity extends AppCompatActivity {
         self_name=findViewById(R.id.self_name);
         self_account=findViewById(R.id.self_account);
         self_return=findViewById(R.id.self_return);
-        spf= PreferenceManager.getDefaultSharedPreferences(this);//打开本地存储的spf数据
+        spf= getSharedPreferences("user", Context.MODE_PRIVATE);//打开本地存储的spf数据
         self_name.setText(spf.getString("username",""));
         self_account.setText("蹦蹦号："+spf.getString("account",""));
         self_return.setOnClickListener(new View.OnClickListener() {

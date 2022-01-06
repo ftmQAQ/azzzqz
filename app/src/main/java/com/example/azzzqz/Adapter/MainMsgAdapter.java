@@ -15,9 +15,9 @@ import androidx.annotation.Nullable;
 
 import com.example.azzzqz.ChatActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.GetNameTask;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.GetNameTask;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.azzzqz.javabean;
+package com.example.azzzqz.Javabean;
 
 public class News {
     private String title;

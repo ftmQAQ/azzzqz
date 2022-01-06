@@ -2,27 +2,20 @@ package com.example.azzzqz.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowId;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.azzzqz.ChatActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.ImageTask;
+import com.example.azzzqz.Javabean.User;
 
 import java.util.ArrayList;
 import java.util.List;

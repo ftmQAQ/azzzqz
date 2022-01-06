@@ -1,19 +1,19 @@
-package com.example.azzzqz.task;
+package com.example.azzzqz.Task;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.utils.Utils;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
 
 import okhttp3.Response;
 
-public class AddFriendRequestTask extends AsyncTask<String,Void, ArrayList<User>> {
+public class FriendTask extends AsyncTask<String,Void, ArrayList<User>> {
     CallBack back;
 
-    public AddFriendRequestTask(CallBack back) {
+    public FriendTask(CallBack back) {
         this.back = back;
     }
 
@@ -31,10 +31,9 @@ public class AddFriendRequestTask extends AsyncTask<String,Void, ArrayList<User>
     @Override
     protected ArrayList<User> doInBackground(String... strings) {
         Response response= Utils.execute(strings[0]);
-        Log.i("好友：",strings[0]);
         try {
             String jsonData = response.body().string();
-            ArrayList<User> result= Utils.addfriendrequestparse(jsonData);
+            ArrayList<User> result= Utils.friendparse(jsonData);
             return result;
         } catch (Exception e) {
             e.printStackTrace();

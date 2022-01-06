@@ -1,11 +1,9 @@
-package com.example.azzzqz.receiver;
+package com.example.azzzqz.Receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import com.example.azzzqz.javabean.Msg;
 
 public class UpDataMsgReciver extends BroadcastReceiver {
     private Boolean updata=false;

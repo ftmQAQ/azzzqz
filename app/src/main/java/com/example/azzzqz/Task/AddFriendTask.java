@@ -1,17 +1,16 @@
-package com.example.azzzqz.task;
+package com.example.azzzqz.Task;
 
 import android.os.AsyncTask;
 
-
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.utils.Utils;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Utils.Utils;
 
 import okhttp3.Response;
 
-public class LoginTask extends AsyncTask<String,Void,User> {
+public class AddFriendTask extends AsyncTask<String,Void, User> {
     CallBack back;
 
-    public LoginTask(CallBack back) {
+    public AddFriendTask(CallBack back) {
         this.back = back;
     }
 
@@ -31,8 +30,8 @@ public class LoginTask extends AsyncTask<String,Void,User> {
         Response response= Utils.execute(strings[0]);
         try {
             String jsonData = response.body().string();
-            User user= Utils.loginparse(jsonData);
-            return user;
+            User result= Utils.addfriendparse(jsonData);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,20 +2,18 @@ package com.example.azzzqz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.azzzqz.Adapter.AddFriendRequestAdapter;
-import com.example.azzzqz.Adapter.FriendAdapter;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.AddFriendRequestTask;
-import com.example.azzzqz.task.FriendTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.AddFriendRequestTask;
 
 import java.util.ArrayList;
 
@@ -35,7 +33,7 @@ public class AddFriendRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend_request);
         lv_friend_request=findViewById(R.id.lv_addfriend_request);
-        spf= PreferenceManager.getDefaultSharedPreferences(AddFriendRequestActivity.this);//打开本地存储的spf数据
+        spf=getSharedPreferences("user", Context.MODE_PRIVATE);//打开本地存储的spf数据
         account=spf.getString("account","");
         loadData();
         adapter=new AddFriendRequestAdapter(AddFriendRequestActivity.this,R.layout.friend_request,list);
@@ -55,7 +53,6 @@ public class AddFriendRequestActivity extends AppCompatActivity {
 
     private void loadData() {
         if(isLoading){
-            Log.i("好友：","xxxxx");
             isLoading=false;
             //执行异步任务，加载数据
             new AddFriendRequestTask(new AddFriendRequestTask.CallBack(){

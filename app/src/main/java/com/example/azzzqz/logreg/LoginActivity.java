@@ -2,10 +2,10 @@ package com.example.azzzqz.logreg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,11 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.azzzqz.Database.MyDatabaseHelper;
 import com.example.azzzqz.MainActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.LoginTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.LoginTask;
 
 public class LoginActivity extends AppCompatActivity {
     private String url="http://userlogin.ftmqaq.cn/?";
@@ -37,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        spf= PreferenceManager.getDefaultSharedPreferences(this);//打开本地存储的spf数据
+        spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         Boolean is_login=false;//判断是否有过登录，如果有直接进入主界面
         is_login=spf.getBoolean("is_login",false);
         if(is_login){

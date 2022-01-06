@@ -5,13 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,14 +21,14 @@ import android.widget.TextView;
 
 import com.example.azzzqz.Adapter.ChatAdapter;
 import com.example.azzzqz.Database.MyDatabaseHelper;
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.receiver.MsgReciver;
-import com.example.azzzqz.task.PutMsgTask;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Receiver.MsgReciver;
+import com.example.azzzqz.Task.PutMsgTask;
 
 import java.util.ArrayList;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {//conprovid n m网格 
     ImageView msg_back;
     TextView friend_msg_name;
     Button msg_send;
@@ -40,7 +40,7 @@ public class ChatActivity extends AppCompatActivity {
     private String url="http://msg.ftmqaq.cn/getname.php?";//获取好友名字
     private String urlput="http://msg.ftmqaq.cn/put.php?";//发送消息链接
     private Boolean isLoading=true;
-    private Boolean flag=true;
+    private Boolean flag_chat=true;
     private ArrayList<Msg> msgs=new ArrayList<>();
     //利用spf获取当前登录用户值
     SharedPreferences spf;
@@ -66,7 +66,7 @@ public class ChatActivity extends AppCompatActivity {
         msg_text=findViewById(R.id.msg_text);
         recyclerView=findViewById(R.id.msg_recyclerView);
         //////////////////////数据库创建///////////////////////////
-        spf= PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);//打开本地存储的spf数据
+        spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         proposer=spf.getString("account","");//我自己
         dbHelper=new MyDatabaseHelper(ChatActivity.this);
         dbHelper.open(proposer);//打开本地数据库
@@ -94,6 +94,7 @@ public class ChatActivity extends AppCompatActivity {
         msg_back.setOnClickListener(new View.OnClickListener() {//返回按钮事件
             @Override
             public void onClick(View v) {
+                flag_chat=false;
                 finish();
             }
         });
@@ -121,30 +122,30 @@ public class ChatActivity extends AppCompatActivity {
         MsgReciver msgReciver=new MsgReciver();
         IntentFilter filter=new IntentFilter("com.example.azzzqz.wlx123");
         getApplicationContext().registerReceiver(msgReciver,filter);
-        new Thread(new Runnable() {//动态获取新消息
-            @Override
-            public void run() {
-                while(flag){
-                    try {
-                        Thread.sleep(3000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    flag=spf.getBoolean("is_login",false);
-                    if(msgReciver.getIsnew()==1) {
-                        if (msgReciver.getMsg().getProposer() == Integer.valueOf(recipient)) {
-                            msgReciver.setIsnew();
-                            msgs.add(msgReciver.getMsg());
-                            Message message=new Message();
-                            message.what=1;
-                            handler.sendMessage(message);
-                        }
-                    }else{
-                        Log.i("reciver","没有消息");
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {//动态获取新消息
+//            @Override
+//            public void run() {
+//                while(flag_chat){
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    flag_chat=spf.getBoolean("is_login",false);
+//                    if(msgReciver.getIsnew()==1) {
+//                        if (msgReciver.getMsg().getProposer() == Integer.valueOf(recipient)) {
+//                            msgReciver.setIsnew();
+//                            msgs.add(msgReciver.getMsg());
+//                            Message message=new Message();
+//                            message.what=1;
+//                            handler.sendMessage(message);
+//                        }
+//                    }else{
+//                        Log.i("reciver","没有消息");
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     private void putmsg() {

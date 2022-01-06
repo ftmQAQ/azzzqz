@@ -3,11 +3,9 @@ package com.example.azzzqz;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -16,15 +14,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.azzzqz.Adapter.AddFriendAdapter;
-import com.example.azzzqz.Adapter.FriendAdapter;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.logreg.RegSuccessActivity;
-import com.example.azzzqz.logreg.RegisterActivity;
-import com.example.azzzqz.task.AddFriendTask;
-import com.example.azzzqz.task.RegisterTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.AddFriendTask;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AddFriendActivity extends AppCompatActivity {
     //导入控件
@@ -47,7 +40,7 @@ public class AddFriendActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
-        spf= PreferenceManager.getDefaultSharedPreferences(this);//打开本地存储的spf数据
+        spf= getSharedPreferences("user",Context.MODE_PRIVATE);//打开本地存储的spf数据
         account=spf.getString("account","");
         im_return=findViewById(R.id.im_return);
         im_search=findViewById(R.id.im_search);

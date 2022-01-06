@@ -1,5 +1,6 @@
-package com.example.azzzqz.fragment;
+package com.example.azzzqz.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -7,28 +8,22 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.azzzqz.Adapter.FriendAdapter;
 import com.example.azzzqz.Adapter.MainMsgAdapter;
 import com.example.azzzqz.Database.MyDatabaseHelper;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.receiver.MsgPeopleReciver;
-import com.example.azzzqz.receiver.MsgReciver;
-import com.example.azzzqz.receiver.UpDataMsgReciver;
-import com.example.azzzqz.task.GetMsgTask;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Receiver.MsgPeopleReciver;
+import com.example.azzzqz.Receiver.UpDataMsgReciver;
+import com.example.azzzqz.Task.GetMsgTask;
 
 import java.util.ArrayList;
-
-import static android.content.ContentValues.TAG;
 
 public class MsgFragment extends Fragment {
     private Boolean isLoading=true;
@@ -52,14 +47,14 @@ public class MsgFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_msg, container, false);
         ////////////////////////////////////数据库操作///////////////////////////////
-        spf= PreferenceManager.getDefaultSharedPreferences(inflater.getContext());//打开本地存储的spf数据
+        spf=getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);//打开本地存储的spf数据
         recipient=spf.getString("account","");//获取当前登录用户，即向服务器请求的接收者
         dbHelper = new MyDatabaseHelper(getContext());
         dbHelper.open(recipient);
         ////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////绑定广播接收器////////////////////////////////////
-        IntentFilter filter=new IntentFilter("com.example.azzzqz.wlx123");
-        getContext().registerReceiver(msgPeopleReciver,filter);
+//        IntentFilter filter=new IntentFilter("com.example.azzzqz.wlx123");
+//        getContext().registerReceiver(msgPeopleReciver,filter);
         ///////////////////////////////显示最新的聊天记录//////////////////////////////
         User[] backusers=dbHelper.querryshowmin();
         try{
@@ -75,45 +70,45 @@ public class MsgFragment extends Fragment {
         UpDataMsgReciver upDataMsgReciver=new UpDataMsgReciver();
         IntentFilter filter1=new IntentFilter("com.example.azzzqz.wlx123");
         getActivity().getApplicationContext().registerReceiver(upDataMsgReciver,filter1);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(flag) {
-                    flag=spf.getBoolean("is_login",false);
-                    try{
-                        Boolean updata=upDataMsgReciver.getUpdata();//线程接受到发送了消息
-                        Log.i("xiaoxi", String.valueOf(updata));
-                        if(updata==true){
-                            backmsg.clear();
-                            User[] backusers=dbHelper.querryshowmin();
-                            try{
-                                for(int i=0;i<backusers.length;i++){//获取原本显示的好友显示的记录
-                                    Msg msg;
-                                    msg=dbHelper.querryNewMsg(String.valueOf(backusers[i].getAccount()));
-                                    msg.setProposer(backusers[i].getAccount());
-                                    backmsg.add(msg);
-                                }
-                            }catch (Exception ex){
-                                System.out.println(ex);
-                            }
-                            Intent intent=new Intent("com.example.azzzqz.wlx123");
-                            intent.putExtra("updata",false);
-                            getActivity().getApplicationContext().sendBroadcast(intent);
-                        }
-                    }catch (Exception exception){
-
-                    }
-                    if(isLoading) {
-                        loadfriendData();
-                    }
-                    try {
-                        Thread.sleep(3000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while(flag) {
+//                    flag=spf.getBoolean("is_login",false);
+//                    try{
+//                        Boolean updata=upDataMsgReciver.getUpdata();//线程接受到发送了消息
+//                        Log.i("xiaoxi", String.valueOf(updata));
+//                        if(updata==true){
+//                            backmsg.clear();
+//                            User[] backusers=dbHelper.querryshowmin();
+//                            try{
+//                                for(int i=0;i<backusers.length;i++){//获取原本显示的好友显示的记录
+//                                    Msg msg;
+//                                    msg=dbHelper.querryNewMsg(String.valueOf(backusers[i].getAccount()));
+//                                    msg.setProposer(backusers[i].getAccount());
+//                                    backmsg.add(msg);
+//                                }
+//                            }catch (Exception ex){
+//                                System.out.println(ex);
+//                            }
+//                            Intent intent=new Intent("com.example.azzzqz.wlx123");
+//                            intent.putExtra("updata",false);
+//                            getActivity().getApplicationContext().sendBroadcast(intent);
+//                        }
+//                    }catch (Exception exception){
+//
+//                    }
+//                    if(isLoading) {
+//                        loadfriendData();
+//                    }
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
         adapter=new MainMsgAdapter(getActivity(),R.layout.friend,backmsg);
         msg_friends=view.findViewById(R.id.msg_friends);
         msg_friends.setAdapter(adapter);

@@ -1,10 +1,8 @@
-package com.example.azzzqz.receiver;
+package com.example.azzzqz.Receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import com.example.azzzqz.javabean.Msg;
 
 public class MsgPeopleReciver extends BroadcastReceiver {
     private int Msgpeople=0;

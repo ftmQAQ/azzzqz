@@ -1,20 +1,15 @@
 package com.example.azzzqz.Adapter;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter; import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.azzzqz.ChatActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.Msg;
+import com.example.azzzqz.Javabean.Msg;
 
 import java.util.ArrayList;
 import java.util.List;

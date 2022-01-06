@@ -1,12 +1,9 @@
 package com.example.azzzqz.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +11,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.AddFriendRequestTask;
-import com.example.azzzqz.task.AddFriendTask;
-import com.example.azzzqz.task.ImageTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.AddFriendTask;
+import com.example.azzzqz.Task.ImageTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class AddFriendAdapter extends ArrayAdapter {
+public class AddFriendAdapter extends ArrayAdapter{
     private int item_layout_id;
     private String url="http://friends.ftmqaq.cn/addfriend.php?"; //添加好友的url
     private Boolean isLoading=true;
@@ -58,7 +52,7 @@ public class AddFriendAdapter extends ArrayAdapter {
             view=convertView;
             holder=(ViewHolder) view.getTag();
         }
-        spf= PreferenceManager.getDefaultSharedPreferences(getContext());//打开本地存储的spf数据
+        spf= getContext().getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         account=spf.getString("account","");
         User user=(User)getItem(position);
         if(user.getResult()==2){//判断返回值，如果是2就是已经添加了好友

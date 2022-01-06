@@ -3,10 +3,8 @@ package com.example.azzzqz.Adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,12 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.azzzqz.AddFriendRequestActivity;
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.AddFriendRequestTask;
-import com.example.azzzqz.task.AllowTask;
-import com.example.azzzqz.task.ImageTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.AllowTask;
+import com.example.azzzqz.Task.ImageTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +60,7 @@ public class AddFriendRequestAdapter extends ArrayAdapter {
             view=convertView;
             holder=(ViewHolder) view.getTag();
         }
-        spf= PreferenceManager.getDefaultSharedPreferences(getContext());//打开本地存储的spf数据
+        spf= getContext().getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         account=spf.getString("account","");
         User user=(User)getItem(position);
         holder.friend_request_name.setText(user.getUsername());

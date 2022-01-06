@@ -1,10 +1,9 @@
-package com.example.azzzqz.task;
+package com.example.azzzqz.Task;
 
 import android.os.AsyncTask;
 
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.utils.Utils;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Utils.Utils;
 
 import okhttp3.Response;
 

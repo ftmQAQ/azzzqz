@@ -1,15 +1,10 @@
-package com.example.azzzqz.receiver;
+package com.example.azzzqz.Receiver;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.core.app.NotificationCompat;
-
-import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.Msg;
+import com.example.azzzqz.Javabean.Msg;
 
 public class MsgReciver extends BroadcastReceiver {
     private Msg msg=new Msg();

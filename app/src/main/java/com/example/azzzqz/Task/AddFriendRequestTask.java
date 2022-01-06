@@ -1,26 +1,26 @@
-package com.example.azzzqz.task;
+package com.example.azzzqz.Task;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.utils.Utils;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
 
 import okhttp3.Response;
 
-public class AddFriendTask extends AsyncTask<String,Void, User> {
+public class AddFriendRequestTask extends AsyncTask<String,Void, ArrayList<User>> {
     CallBack back;
 
-    public AddFriendTask(CallBack back) {
+    public AddFriendRequestTask(CallBack back) {
         this.back = back;
     }
 
     @Override
-    protected void onPostExecute(User user) {
-        super.onPostExecute(user);
-        if(back!=null)back.getResult(user);
+    protected void onPostExecute(ArrayList<User> useres) {
+        super.onPostExecute(useres);
+        if(back!=null)back.getResult(useres);
     }
 
     /**
@@ -29,11 +29,12 @@ public class AddFriendTask extends AsyncTask<String,Void, User> {
      * @return
      */
     @Override
-    protected User doInBackground(String... strings) {
+    protected ArrayList<User> doInBackground(String... strings) {
         Response response= Utils.execute(strings[0]);
+        Log.i("好友：",strings[0]);
         try {
             String jsonData = response.body().string();
-            User result= Utils.addfriendparse(jsonData);
+            ArrayList<User> result= Utils.addfriendrequestparse(jsonData);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,6 +43,6 @@ public class AddFriendTask extends AsyncTask<String,Void, User> {
     }
 
     public interface CallBack{
-        public void getResult(User result);
+        public void getResult(ArrayList<User> result);
     }
 }

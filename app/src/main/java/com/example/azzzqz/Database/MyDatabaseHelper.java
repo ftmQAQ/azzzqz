@@ -7,18 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.User;
-
-import java.util.ArrayList;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Javabean.User;
 
 public class MyDatabaseHelper {
     private Context context;
     private MyDatabase dbOpen;
     private SQLiteDatabase db;
     public MyDatabaseHelper(Context context) {this.context=context;}
+
     private class MyDatabase extends SQLiteOpenHelper {
         public static final String CREATE_FRIEND = "create table friend(" +
                 "account integer primary key autoincrement," +
@@ -60,7 +58,6 @@ public class MyDatabaseHelper {
         values.put("account",user.getAccount());
         values.put("username",user.getUsername());
         values.put("flag","0");
-        System.out.println(values);
         return db.insert("friend",null,values);
     }
 
@@ -147,7 +144,6 @@ public class MyDatabaseHelper {
         values.put("msg",msg.getMsg());
         values.put("date",msg.getDate());
         values.put("type",msg.getType());
-        System.out.println(values);
         return db.insert("msg"+proposer,null,values);
     }
 

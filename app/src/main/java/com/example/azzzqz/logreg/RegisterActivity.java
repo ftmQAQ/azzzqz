@@ -10,9 +10,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.azzzqz.R;
-import com.example.azzzqz.javabean.User;
-import com.example.azzzqz.task.LoginTask;
-import com.example.azzzqz.task.RegisterTask;
+import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.Task.RegisterTask;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText et_username,et_password,et_password2;

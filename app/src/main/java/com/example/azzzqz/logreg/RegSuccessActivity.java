@@ -2,6 +2,7 @@ package com.example.azzzqz.logreg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ public class RegSuccessActivity extends AppCompatActivity {
         reg_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spf= PreferenceManager.getDefaultSharedPreferences(RegSuccessActivity.this);//打开本地存储的spf数据
+                spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
                 editor=spf.edit();
                 editor.putString("account",account);
                 editor.apply();

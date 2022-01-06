@@ -1,6 +1,4 @@
-package com.example.azzzqz.javabean;
-
-import androidx.recyclerview.widget.RecyclerView;
+package com.example.azzzqz.Javabean;
 
 public class Msg {
     private int proposer,recipient;

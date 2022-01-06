@@ -14,7 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Azzzqz"
         android:usesCleartextTraffic="true">
-        <activity android:name=".BiliActivity"></activity>
+        <service
+            android:name=".Service.FriendService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".BiliActivity" />
         <activity android:name=".SelfActivity" />
         <activity android:name=".ContentActivity" />
         <activity android:name=".AddFriendRequestActivity" />

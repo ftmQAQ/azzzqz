@@ -1,17 +1,16 @@
-package com.example.azzzqz.utils;
+package com.example.azzzqz.Utils;
 
 import android.util.Log;
 
-import com.example.azzzqz.javabean.Msg;
-import com.example.azzzqz.javabean.News;
-import com.example.azzzqz.javabean.User;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Javabean.News;
+import com.example.azzzqz.Javabean.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
@@ -77,20 +76,9 @@ public class Utils {
     public static ArrayList<User> friendparse(String data){
         ArrayList<User> result=new ArrayList<>();
         try {
-            Log.i("msg",data);
             JSONObject object=new JSONObject(data);
-            if (object.getInt("result")==0){
-                User userx=new User();
-                userx.setFrireq_count(object.getInt("friendrequest_count"));
-                result.add(userx);
-                return result;
-            }
             JSONArray object2=object.getJSONArray("data");
-            User userx=new User();
-            userx.setFrireq_count(object.getInt("friendrequest_count"));
-            result.add(userx);
             for(int i=0;i<object2.length();i++){
-                Log.i("i的值",String.valueOf(i));
                 JSONObject objectIn=object2.getJSONObject(i);
                 String username=objectIn.getString("username");
                 int account=objectIn.getInt("account");

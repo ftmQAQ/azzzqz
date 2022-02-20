@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.News;
 import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +13,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,8 +49,10 @@ public class Utils {
         try {
             JSONObject object=new JSONObject(data);
             String username=object.getString("username");
+            String portrait=object.getString("portrait");
             int result=object.getInt("result");
             user.setUsername(username);
+            user.setPortrait_img(portrait);
             user.setResult(result);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -167,7 +172,6 @@ public class Utils {
     public static ArrayList<Msg> getmsgparse(String data){
         ArrayList<Msg> result=new ArrayList<>();
         try {
-            Log.i("msg",data);
             JSONObject object=new JSONObject(data);
             try{
                 JSONArray object2=object.getJSONArray("data");
@@ -187,7 +191,7 @@ public class Utils {
                     result.add(msg);
                 }
             }catch (Exception ex){
-
+                Log.i("Utiles getmsgparse","数据解析失败");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -229,5 +233,62 @@ public class Utils {
             e.printStackTrace();
         }
         return result;
+    }
+
+    //手机号校验
+    public static boolean  checkTel(String tel){
+        Pattern p = Pattern.compile("^[1][3,4,5,7,8,9][0-9]{9}$");
+        Matcher matcher = p.matcher(tel);
+        return matcher.matches();
+    }
+
+    //更新手机号结果解析
+    public static boolean upphone(String data){
+        Boolean result=false;
+        try {
+            JSONObject object=new JSONObject(data);
+            int upphone=object.getInt("result");
+            if(upphone==1){
+                result=true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //个人数据解析
+    public static User userinfoparse(String data){
+        User user=new User();
+        try {
+            Log.i("Utils",data);
+            JSONObject object=new JSONObject(data);
+            String username=object.getString("username");
+            String sex=object.getString("sex");
+            int age=object.getInt("age");
+            String phone=object.getString("phone");
+            String img=object.getString("portrait");
+            user.setUsername(username);
+            user.setPortrait_img(img);
+            user.setAge(age);
+            user.setPhone(phone);
+            user.setSex(sex);
+        }catch(JSONException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    //头像选择
+    public static int portraitselect(String text){
+        if(text.equals("test")){
+            return R.drawable.test;
+        }else if(text.equals("test2")){
+            return R.drawable.test2;
+        }else if(text.equals("test3")){
+            return R.drawable.test3;
+        }else{
+            return R.drawable.test;
+        }
     }
 }

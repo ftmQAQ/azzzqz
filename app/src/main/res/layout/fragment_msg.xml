@@ -3,11 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".Fragment.MsgFragment">
-    <ListView
-        android:id="@+id/msg_friends"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/msg_hint"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#FFE699"
+            android:textColor="#ff0000"
+            android:gravity="center"
+            android:text="连接异常!请检查网络连接"
+            android:visibility="gone">
+
+        </TextView>
+        <ListView
+            android:id="@+id/msg_friends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </ListView>
+    </LinearLayout>
+
 
 </FrameLayout>

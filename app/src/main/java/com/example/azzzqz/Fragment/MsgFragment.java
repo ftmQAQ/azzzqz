@@ -1,18 +1,24 @@
 package com.example.azzzqz.Fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.azzzqz.Adapter.MainMsgAdapter;
 import com.example.azzzqz.Database.MyDatabaseHelper;
@@ -21,27 +27,52 @@ import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.User;
 import com.example.azzzqz.Receiver.MsgPeopleReciver;
 import com.example.azzzqz.Receiver.UpDataMsgReciver;
-import com.example.azzzqz.Task.GetMsgTask;
+import com.example.azzzqz.Service.FriendService;
+import com.example.azzzqz.Service.MsgService;
+import com.example.azzzqz.Utils.Utils;
+import com.example.azzzqz.logreg.LoginActivity;
 
 import java.util.ArrayList;
 
 public class MsgFragment extends Fragment {
+    private String TAG="MsgFragment";
     private Boolean isLoading=true;
     private String url="http://msg.ftmqaq.cn/get.php?";
     private ArrayList<Msg> backmsg=new ArrayList<>();
-    private String proposer,recipient;
+    private String proposer,recipient,portrait;
     private MainMsgAdapter adapter;
     ListView msg_friends;
+    TextView msg_hint;
     //利用spf获取当前登录用户值
     SharedPreferences spf;
+    SharedPreferences.Editor editor;
     private MyDatabaseHelper dbHelper;
     private Boolean flag=true;
-    //广播接收器
-    MsgPeopleReciver msgPeopleReciver=new MsgPeopleReciver();
+    private Intent intent;
     public MsgFragment() {
         // Required empty public constructor
     }
+    //新建service的内部类中的control
+    private MsgService.MsgControl control=null;
+    //聊天信息和websocket通信
+    private MsgBroadcastReceiver msgBroadcastReceiver=new MsgBroadcastReceiver();
+    //聊天对象和chatactivity通信
+    ChatBroadcastReceiver chatBroadcastReceiver=new ChatBroadcastReceiver();
+    //ServiceConnection用于和msgService相关联
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {//当活动与服务绑定时，建立连接，执行该方法
+            control= (MsgService.MsgControl) service;
+            control.SetAccount(recipient);//设置对应的账号
+            control.MsgTaskStart(getContext());
+        }
 
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+    //////////////////////////////////////////////////////////////////////////
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,9 +82,8 @@ public class MsgFragment extends Fragment {
         recipient=spf.getString("account","");//获取当前登录用户，即向服务器请求的接收者
         dbHelper = new MyDatabaseHelper(getContext());
         dbHelper.open(recipient);
-        ////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////绑定广播接收器////////////////////////////////////
-//        IntentFilter filter=new IntentFilter("com.example.azzzqz.wlx123");
+//        IntentFilter filter=new IntentFilter("com.example.azzzqz.chat");
 //        getContext().registerReceiver(msgPeopleReciver,filter);
         ///////////////////////////////显示最新的聊天记录//////////////////////////////
         User[] backusers=dbHelper.querryshowmin();
@@ -65,98 +95,117 @@ public class MsgFragment extends Fragment {
                 backmsg.add(msg);
             }
         }catch (Exception ex){
-
+            Log.i(TAG,"好友消息获取失败");
         }
-        UpDataMsgReciver upDataMsgReciver=new UpDataMsgReciver();
-        IntentFilter filter1=new IntentFilter("com.example.azzzqz.wlx123");
-        getActivity().getApplicationContext().registerReceiver(upDataMsgReciver,filter1);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while(flag) {
-//                    flag=spf.getBoolean("is_login",false);
-//                    try{
-//                        Boolean updata=upDataMsgReciver.getUpdata();//线程接受到发送了消息
-//                        Log.i("xiaoxi", String.valueOf(updata));
-//                        if(updata==true){
-//                            backmsg.clear();
-//                            User[] backusers=dbHelper.querryshowmin();
-//                            try{
-//                                for(int i=0;i<backusers.length;i++){//获取原本显示的好友显示的记录
-//                                    Msg msg;
-//                                    msg=dbHelper.querryNewMsg(String.valueOf(backusers[i].getAccount()));
-//                                    msg.setProposer(backusers[i].getAccount());
-//                                    backmsg.add(msg);
-//                                }
-//                            }catch (Exception ex){
-//                                System.out.println(ex);
-//                            }
-//                            Intent intent=new Intent("com.example.azzzqz.wlx123");
-//                            intent.putExtra("updata",false);
-//                            getActivity().getApplicationContext().sendBroadcast(intent);
-//                        }
-//                    }catch (Exception exception){
-//
-//                    }
-//                    if(isLoading) {
-//                        loadfriendData();
-//                    }
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }).start();
-        adapter=new MainMsgAdapter(getActivity(),R.layout.friend,backmsg);
+        //将fragment和service绑定
+        intent=new Intent(MsgFragment.this.getActivity(), MsgService.class);
+        getContext().bindService(intent,connection,Context.BIND_AUTO_CREATE);
+        //设置连接传递的account
+        getActivity().startService(intent);
+        //动态注册广播接收器_websocket接收到的msg
+        IntentFilter msgintentFilter=new IntentFilter("com.example.azzzqz.msg");
+        getActivity().registerReceiver(msgBroadcastReceiver,msgintentFilter);
+        //动态注册广播接收器_chat发送的msg
+        IntentFilter chatintentFilter=new IntentFilter("com.example.azzzqz.chattomsg");
+        getActivity().registerReceiver(chatBroadcastReceiver,chatintentFilter);
+        adapter=new MainMsgAdapter(getActivity(),R.layout.friend,backmsg,recipient);
         msg_friends=view.findViewById(R.id.msg_friends);
+        msg_hint=view.findViewById(R.id.msg_hint);
         msg_friends.setAdapter(adapter);
         return view;
     }
 
-    private void loadfriendData() {
-        if(isLoading){
-            isLoading=false;
-            //执行异步任务，加载数据
-            new GetMsgTask(new GetMsgTask.CallBack(){
-                @Override
-                public void getResult(ArrayList<Msg> result) {
-                    int countr=result.size();
-                    int countb=backmsg.size();
-                    if(countr>0){
-                        for(int i=0;i<countr;i++){//遍历整个返回的值
-                            dbHelper.updatafriendflag(String.valueOf(result.get(i).getRecipient())/**接收人**/,String.valueOf(result.get(i).getProposer())/**发送人**/,1);//标注此人发送的信息
-                            if(countb>0){//判断这countb是否是空的,为空直接添加第一个值
-                                for(int j=0;j<countb;j++){
-                                    if(result.get(i).getProposer()==backmsg.get(j).getProposer()){
-                                        backmsg.remove(j);
-                                        Log.i("是否存在此人","是");
-                                        break;
-                                    }
-                                }
-                                backmsg.add(0,result.get(i));
-                            }else{
-                                backmsg.add(0,result.get(i));
-                            }
-                            int account=result.get(i).getProposer();
-                            dbHelper.creatfritable(String.valueOf(account));
-                            dbHelper.insertMsg(result.get(i));
-                            if(result.get(i).getProposer()==msgPeopleReciver.getMsgpeople()){//捕获获取到的发送人是否是现在聊天的人，是的话就发送广播去现在的窗口
-                                Intent intent=new Intent("com.example.azzzqz.wlx123");
-                                intent.putExtra("msg",result.get(i).getMsg());
-                                intent.putExtra("date",result.get(i).getDate());
-                                intent.putExtra("proposer",result.get(i).getProposer());
-                                getContext().sendBroadcast(intent);
+    public class ChatBroadcastReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String recipient=intent.getStringExtra("recipient");
+            String data=intent.getStringExtra("data");
+            String time=intent.getStringExtra("date");
+            Msg temp_msg=new Msg();
+            temp_msg.setDate(time);
+            temp_msg.setMsg(data);
+            temp_msg.setProposer(Integer.valueOf(recipient));
+            Boolean isup=false;
+            if(backmsg.size()>0){
+                for (int i = 0; i < backmsg.size(); i++) {
+                    if(backmsg.get(i).getProposer()==Integer.valueOf(recipient)) {
+                        backmsg.remove(i);
+                        backmsg.add(0,temp_msg);
+                        isup=true;
+                        break;
+                    }
+                }
+                if(!isup){
+                    backmsg.add(0,temp_msg);
+                }
+            }else{
+                backmsg.add(0,temp_msg);
+            }
+            dbHelper.creatfritable(recipient);
+            dbHelper.insertshowmin(recipient);
+            adapter.notifyDataSetChanged();
+            control.Sendmsg(recipient,data);
+        }
+    }
+
+    public class MsgBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String msg=intent.getStringExtra("data");
+            if(msg.equals("on")){
+                msg_hint.setVisibility(View.GONE);
+            }else if(msg.equals("noton")){
+                msg_hint.setVisibility(View.VISIBLE);
+            }else if(msg.equals("down")){
+                Intent intent1=new Intent(getContext(), LoginActivity.class);
+                Toast.makeText(context, "异地登录，强制下线", Toast.LENGTH_SHORT).show();
+                intent1.putExtra("islogin",1);
+                startActivity(intent1);
+                getActivity().finish();
+            }else{
+                ArrayList<Msg> result= Utils.getmsgparse(msg);
+                for (int j = 0; j <result.size() ; j++) {
+                    Boolean isup=false;
+                    if(backmsg.size()>0){
+                        for (int i = 0; i <backmsg.size() ; i++) {
+                            if(result.get(j).getProposer()==backmsg.get(i).getProposer()) {
+                                backmsg.remove(i);
+                                backmsg.add(0,result.get(j));
+                                isup=true;
+                                break;
                             }
                         }
+                        if(!isup){
+                            backmsg.add(0,result.get(j));
+                        }
+                    }else{
+                        backmsg.add(0,result.get(j));
                     }
-                    adapter.notifyDataSetChanged();
+                    msg_friends.setAdapter(adapter);
+                    int account=result.get(j).getProposer();
+                    dbHelper.creatfritable(String.valueOf(account));
+                    dbHelper.insertMsg(result.get(j));
+                    dbHelper.insertshowmin(String.valueOf(result.get(j).getProposer()));
+                    sendMsgBroadcast(result.get(j));
                 }
-            }).execute(url+"recipient="+recipient);
-            isLoading=true;
-        }else{
-
+            }
         }
+    }
+    public void sendMsgBroadcast(Msg msg){//发送去chatactivity的广播
+        //发送自定义广播
+        Intent intent=new Intent("com.example.azzzqz.msgtochat");
+        intent.putExtra("date",msg.getDate());
+        intent.putExtra("proposer",msg.getProposer());
+        intent.putExtra("msg",msg.getMsg());
+        getActivity().sendBroadcast(intent);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG,"onDestroy");
+        getActivity().unbindService(connection);
+        getActivity().stopService(intent);
+        getActivity().unregisterReceiver(msgBroadcastReceiver);
+        getActivity().unregisterReceiver(chatBroadcastReceiver);
     }
 }

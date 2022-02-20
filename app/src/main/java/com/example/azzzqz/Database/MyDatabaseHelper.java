@@ -19,7 +19,13 @@ public class MyDatabaseHelper {
 
     private class MyDatabase extends SQLiteOpenHelper {
         public static final String CREATE_FRIEND = "create table friend(" +
-                "account integer primary key autoincrement," +
+                "account integer primary key," +
+                "username text," +
+                "portrait text," +
+                "newmsgcount integer)";
+
+        public static final String CREATE_SHOW_FRIEND = "create table show_friend(" +
+                "account integer primary key," +
                 "username text," +
                 "flag integer)";
 
@@ -31,6 +37,7 @@ public class MyDatabaseHelper {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_FRIEND);
+            db.execSQL(CREATE_SHOW_FRIEND);
         }
 
         @Override
@@ -57,7 +64,8 @@ public class MyDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put("account",user.getAccount());
         values.put("username",user.getUsername());
-        values.put("flag","0");
+        values.put("portrait",user.getPortrait_img());
+        values.put("newmsgcount","0");
         return db.insert("friend",null,values);
     }
 
@@ -66,6 +74,7 @@ public class MyDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put("account",user.getAccount());
         values.put("username",user.getUsername());
+        values.put("portrait",user.getPortrait_img());
         return db.update("friend",values,"account=?",new String[]{String.valueOf(user.getAccount())});
     }
 
@@ -74,29 +83,73 @@ public class MyDatabaseHelper {
         return ConverToUser(result);
     }
 
-    public User[] querryfriend(int account){//寻找好友表中的所有好友
+    public User[] querryfriend(int account){//寻找好友表中的特定好友
         Cursor result=db.query("friend",null,"account=?",new String[]{String.valueOf(account)},null,null,null);
         return ConverToUser(result);
     }
 
-    //获取flag是1的好友列表
+    //获取需要显示的好友列表
     public User[] querryshowmin(){
-        Cursor result=db.query("friend",null,"flag=?",new String[]{String.valueOf(1)},null,null,null);
-        return ConverToUser(result);
+        Cursor result=db.query("show_friend",null,null,null,null,null,"flag desc");
+        return ConverTominUser(result);
+    }
+
+    public int setshowminflag(){
+        Cursor result=db.query("show_friend",null,null,null,null,null,"flag");
+        if(result.getCount()!=0){
+            result.moveToLast();
+            return result.getInt(result.getColumnIndex("flag"));
+        }else{
+            return 0;
+        }
+
+    }
+
+    public long insertshowmin(String account){
+        ContentValues values = new ContentValues();
+        values.put("account",account);
+        values.put("username","");
+        values.put("flag",setshowminflag()+1);
+        Cursor result=db.query("show_friend",null,"account=?",new String[]{account},null,null,null);
+        if(result.getCount()!=0){
+            Log.i("mydatabase2", String.valueOf(setshowminflag()+1));
+            return db.update("show_friend",values,"account=?",new String[]{account});
+        }else{
+            return db.insert("show_friend",null,values);
+        }
     }
 
     /**
      *
-     * @param account 聊天对象的账号
-     * @param flag 是否有必要显示消息记录
+     * @param friaccount 聊天对象的账号
+     * @param count 是否有必要显示消息记录
      * @return
      */
-    public long updatafriendflag(String account,String friaccount,int flag){//更新flag值
+    public long updatafriendnewmsgcount(String account,String friaccount,int count){//更新新消息数量值
         open(account);
         ContentValues values = new ContentValues();
-        Log.i("friaccount",friaccount);
-        values.put("flag",flag);
+        Cursor result=db.query("friend",null,"account=?",new String[]{String.valueOf(friaccount)},null,null,null);
+        result.moveToFirst();
+        int newmsgcount=result.getColumnIndex("newmsgcount")+count;
+        values.put("newmsgcount",newmsgcount);
         return db.update("friend",values,"account=?",new String[]{friaccount});
+    }
+
+
+
+    //将返回集，转换为User列表
+    private User[] ConverTominUser(Cursor result) {
+        int resultsCount=result.getCount();
+        if(resultsCount==0||!result.moveToFirst()){
+            return null;
+        }
+        User[] users=new User[resultsCount];
+        for(int i=0;i<resultsCount;i++){
+            users[i]=new User();
+            users[i].setAccount(result.getInt(result.getColumnIndex("account")));
+            result.moveToNext();
+        }
+        return users;
     }
 
     //将返回集，转换为User列表
@@ -110,6 +163,7 @@ public class MyDatabaseHelper {
             users[i]=new User();
             users[i].setUsername(result.getString(result.getColumnIndex("username")));
             users[i].setAccount(result.getInt(result.getColumnIndex("account")));
+            users[i].setPortrait_img(result.getString(result.getColumnIndex("portrait")));
             result.moveToNext();
         }
         return users;

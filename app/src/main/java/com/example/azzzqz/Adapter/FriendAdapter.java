@@ -2,6 +2,7 @@ package com.example.azzzqz.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,13 @@ import androidx.annotation.Nullable;
 import com.example.azzzqz.ChatActivity;
 import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.User;
+import com.example.azzzqz.UserinfoActivity;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendAdapter extends ArrayAdapter {
     private int item_layout_id;
@@ -49,11 +54,24 @@ public class FriendAdapter extends ArrayAdapter {
         User user=(User)getItem(position);
         holder.friend_name.setText(user.getUsername());
         holder.fri_other_msg.setText("蹦蹦号： "+String.valueOf(user.getAccount()));
+        holder.friend_img.setImageResource(Utils.portraitselect(user.getPortrait_img()));
+        holder.friend_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), UserinfoActivity.class);
+                intent.putExtra("account",user.getAccount());
+                intent.putExtra("username",user.getUsername());
+                intent.putExtra("userinfo_img",user.getPortrait_img());
+                intent.putExtra("usertype",2);
+                getContext().startActivity(intent);
+            }
+        });
         holder.fri_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getContext(), ChatActivity.class);
                 intent.putExtra("account",String.valueOf(user.getAccount()));
+                intent.putExtra("portrait",user.getPortrait_img());
                 getContext().startActivity(intent);
                 //发送广播消息给消息接收页
                 Intent intent2=new Intent("com.example.azzzqz.wlx123");
@@ -81,11 +99,13 @@ public class FriendAdapter extends ArrayAdapter {
         TextView fri_other_msg;
         ImageView iv_image;
         LinearLayout fri_item;
+        CircleImageView friend_img;
         public ViewHolder(View view){
             friend_name=view.findViewById(R.id.friend_name);
             iv_image=view.findViewById(R.id.friend_img);
             fri_item=view.findViewById(R.id.fri_item);
             fri_other_msg=view.findViewById(R.id.fri_other_msg);
+            friend_img=view.findViewById(R.id.friend_img);
         }
     }
 }

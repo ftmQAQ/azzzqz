@@ -2,22 +2,21 @@ package com.example.azzzqz.Task;
 
 import android.os.AsyncTask;
 
-import com.example.azzzqz.Javabean.User;
 import com.example.azzzqz.Utils.Utils;
 
 import okhttp3.Response;
 
-public class AllowTask extends AsyncTask<String,Void, User> {
-    AddFriendTask.CallBack back;
+public class RePasswordTask extends AsyncTask<String,Void, Boolean> {
+    RePasswordTask.CallBack back;
 
-    public AllowTask(CallBack callBack) {
-            this.back = back;
+    public RePasswordTask(RePasswordTask.CallBack back) {
+        this.back = back;
     }
 
     @Override
-    protected void onPostExecute(User user) {
-        super.onPostExecute(user);
-        if (back != null) back.getResult(user);
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+        if (back != null) back.getResult(result);
     }
 
     /**
@@ -25,11 +24,11 @@ public class AllowTask extends AsyncTask<String,Void, User> {
      * @return
      */
     @Override
-    protected User doInBackground(String... strings) {
+    protected Boolean doInBackground(String... strings) {
         Response response = Utils.execute(strings[0]);
         try {
             String jsonData = response.body().string();
-            User result = Utils.allowparse(jsonData);
+            Boolean result = Utils.upphone(jsonData);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,6 +37,6 @@ public class AllowTask extends AsyncTask<String,Void, User> {
     }
 
     public interface CallBack {
-        public void getResult(User result);
+        public void getResult(Boolean result);
     }
 }

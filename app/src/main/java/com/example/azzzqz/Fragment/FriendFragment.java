@@ -18,8 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.azzzqz.Adapter.FriendAdapter;
 import com.example.azzzqz.AddFriendRequestActivity;
@@ -40,6 +45,7 @@ public class FriendFragment extends Fragment {
     ListView lv_friends;
     TextView friendrequest_count;
     CardView friend_request;
+    ImageView shuaxin;
     private String url="http://friends.ftmqaq.cn/?";
     private Boolean isLoading=true;
     private int count=0;
@@ -52,6 +58,7 @@ public class FriendFragment extends Fragment {
     private Boolean flag2=true;
     //本地数据查找对象myDatabaseHelper
     private MyDatabaseHelper myDatabaseHelper;
+    private Intent intent;
     public FriendFragment() {
         // Required empty public constructor
     }
@@ -91,10 +98,10 @@ public class FriendFragment extends Fragment {
         friend_request.setEnabled(false);
         loadclientfriendData();
         //将fragment和service绑定
-        Intent intent=new Intent(FriendFragment.this.getActivity(), FriendService.class);
+        intent=new Intent(FriendFragment.this.getActivity(), FriendService.class);
         getContext().bindService(intent,connection,Context.BIND_AUTO_CREATE);
         //动态注册广播接收器
-        IntentFilter intentFilter=new IntentFilter("com.example.azzzqz");
+        IntentFilter intentFilter=new IntentFilter("com.example.azzzqz.Friend");
         getActivity().registerReceiver(friendBroadcastReceiver,intentFilter);
         //设置连接传递的account
         getActivity().startService(intent);
@@ -103,6 +110,18 @@ public class FriendFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent=new Intent(getContext(), AddFriendRequestActivity.class);
                 startActivity(intent);
+            }
+        });
+        shuaxin=view.findViewById(R.id.shuaxin);
+        shuaxin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation operatingAnim = AnimationUtils.loadAnimation(getContext(), R.anim.tip);
+                LinearInterpolator lin = new LinearInterpolator();
+                operatingAnim.setInterpolator(lin);
+                shuaxin.startAnimation(operatingAnim);
+                control.loadserverfriendData(getContext());
+                shuaxin.setEnabled(false);
             }
         });
         adapter=new FriendAdapter(getActivity(),R.layout.friend,list);
@@ -120,6 +139,8 @@ public class FriendFragment extends Fragment {
             Boolean updata_flag=intent.getBooleanExtra("updata_flag",false);
             if(updata_flag){
                 loadclientfriendData();
+                Toast.makeText(context, "好友列表刷新成功", Toast.LENGTH_SHORT).show();
+                shuaxin.setEnabled(true);
             }
             if(friendcount>0){
                 friendrequest_count.setText("你有"+friendcount+"个请求");
@@ -128,7 +149,6 @@ public class FriendFragment extends Fragment {
                 friendrequest_count.setText("暂无好友请求");
                 friend_request.setEnabled(false);
             }
-
         }
     }
 
@@ -143,6 +163,7 @@ public class FriendFragment extends Fragment {
                 User item=new User();
                 item.setAccount(usersave.getAccount());
                 item.setUsername(usersave.getUsername());
+                item.setPortrait_img(usersave.getPortrait_img());
                 list.add(item);
                 try{
                     adapter.notifyDataSetChanged();
@@ -158,7 +179,6 @@ public class FriendFragment extends Fragment {
         super.onDestroy();
         Log.i(TAG,"onDestroy");
         flag=false;
-        Intent intent=new Intent(getActivity(),FriendService.class);
         getActivity().unbindService(connection);
         getActivity().stopService(intent);
         getActivity().unregisterReceiver(friendBroadcastReceiver);

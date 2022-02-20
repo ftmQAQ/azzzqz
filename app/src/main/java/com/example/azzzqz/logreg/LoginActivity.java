@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tv_register;//注册账号控件
     private String account;
     private String password;
+    private String portrait;
     //记录登录数据用的数据库
     SharedPreferences spf;
     SharedPreferences.Editor editor;
@@ -36,16 +38,19 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
         spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         Boolean is_login=false;//判断是否有过登录，如果有直接进入主界面
         is_login=spf.getBoolean("is_login",false);
-        if(is_login){
+        Log.i("log", String.valueOf(is_login));
+        Intent intent1=getIntent();
+        int islogin=intent1.getIntExtra("islogin",0);
+        if(is_login&&islogin==0){
             Intent intent=new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
         et_account=findViewById(R.id.et_account);
         et_password=findViewById(R.id.et_password);
         cb_remember=findViewById(R.id.cb_remember);
@@ -95,6 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                         //登录成功后将账号信息保存在本地，实现下次打开直接登录.
                         editor=spf.edit();
                         if(is_remember) {
+                            editor.putString("portrait",backuser.getPortrait_img());
                             editor.putString("account", account);
                             editor.putString("password", password);
                             editor.putString("username", backuser.getUsername());
@@ -102,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putBoolean("is_login", true);
                         }else{
                             editor.clear();
+                            editor.putString("portrait",backuser.getPortrait_img());
                             editor.putString("account", account);
                             editor.putString("username", backuser.getUsername());
                             editor.putBoolean("is_remember", is_remember);

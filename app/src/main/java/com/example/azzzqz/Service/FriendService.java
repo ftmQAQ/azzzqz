@@ -36,6 +36,7 @@ public class FriendService extends Service {
         private String temp_count;//临时存放好友申请数量
         private String temp_data;//临时存放返回的数据
         private Boolean FS_flag=false;//updateFriend的task的开关
+        private MyWebSocket socket=new MyWebSocket(wsurl);
         private MyDatabaseHelper myDatabaseHelper;//本地数据库
 
         public void setFS_flag(Boolean FS_flag) {
@@ -51,7 +52,11 @@ public class FriendService extends Service {
         }
 
         public void updateFriend(Context context){//更新好友
-            MyWebSocket socket=new MyWebSocket(wsurl);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             task=new TimerTask() {
                 @Override
                 public void run() {
@@ -93,7 +98,7 @@ public class FriendService extends Service {
 
         public void sendFirendBroadcast(Boolean updata){
             //发送自定义广播
-            Intent intent=new Intent("com.example.azzzqz");
+            Intent intent=new Intent("com.example.azzzqz.Friend");
             intent.putExtra("friendcount",friendcount);
             intent.putExtra("updata_flag",updata);
             sendBroadcast(intent);

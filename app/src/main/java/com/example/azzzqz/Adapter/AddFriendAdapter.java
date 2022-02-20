@@ -19,6 +19,7 @@ import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.User;
 import com.example.azzzqz.Task.AddFriendTask;
 import com.example.azzzqz.Task.ImageTask;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.List;
 
@@ -76,15 +77,7 @@ public class AddFriendAdapter extends ArrayAdapter{
         });
         //给图片控件设置要显示的图片
         String image_url=user.getPortrait_img();
-        if(TextUtils.isEmpty(image_url)){
-        }else{
-            new ImageTask(new ImageTask.CallBack(){
-                @Override
-                public void getResult(Bitmap result){
-                    holder.iv_image.setImageBitmap(result);
-                }
-            }).execute(image_url);
-        }
+        holder.iv_image.setImageResource(Utils.portraitselect(image_url));
         return view;
     }
     public class ViewHolder{
@@ -93,14 +86,14 @@ public class AddFriendAdapter extends ArrayAdapter{
         ImageView iv_image;
         Button bt_addfriend;
         public ViewHolder(View view){
-            friend_name=view.findViewById(R.id.friend_name);
-            iv_image=view.findViewById(R.id.friend_img);
+            friend_name=view.findViewById(R.id.friend_add_name);
+            iv_image=view.findViewById(R.id.friend_add_img);
             bt_addfriend=view.findViewById(R.id.bt_addfriend);
             friend_account=view.findViewById(R.id.addfriend_account);
         }
     }
 
-    private void loadData() {//执行异步任务，返回注册成功后的user数据，
+    private void loadData() {//执行异步任务，返回user数据，
         if(isLoading){
             isLoading=false;
             //执行异步任务，加载数据

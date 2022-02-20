@@ -10,19 +10,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> { //定义两个类别标志
     private static final int TYPE_LEFT = 0;
     private static final int TYPE_RIGHT = 1;
     private int type=-1;
     private Context context;
+    private String leftimg,rightimg;
     private ArrayList<Msg> data;
-    public ChatAdapter(Context context,List data) {
+    public ChatAdapter(Context context,List data,String left_img,String right_img) {
         this.context = context;
         this.data = (ArrayList<Msg>) data;
+        leftimg=left_img;
+        rightimg=right_img;
     }
 
     @Override
@@ -49,8 +55,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> { 
         Msg msg = data.get(position);
         if(data.get(position).getType()==TYPE_LEFT){
             holder.leftMsg.setText(msg.getMsg());
+            holder.left_img.setImageResource(Utils.portraitselect(leftimg));
         }else if(data.get(position).getType()==TYPE_RIGHT){
             holder.rightMsg.setText(msg.getMsg());
+            holder.right_img.setImageResource(Utils.portraitselect(rightimg));
         }
 
     }
@@ -73,10 +81,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> { 
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView leftMsg;
         TextView rightMsg;
+        CircleImageView left_img,right_img;
         public ViewHolder(View view){
             super(view);
             leftMsg=view.findViewById(R.id.leftMsg);
             rightMsg=view.findViewById(R.id.rightMsg);
+            left_img=view.findViewById(R.id.left_img);
+            right_img=view.findViewById(R.id.right_img);
         }
     }
 }

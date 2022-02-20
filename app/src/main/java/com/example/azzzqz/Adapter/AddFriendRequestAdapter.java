@@ -22,6 +22,7 @@ import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.User;
 import com.example.azzzqz.Task.AllowTask;
 import com.example.azzzqz.Task.ImageTask;
+import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,17 +107,7 @@ public class AddFriendRequestAdapter extends ArrayAdapter {
         });
         //给图片控件设置要显示的图片
         String image_url=user.getPortrait_img();
-        Log.i("TAG", "getView: "+image_url);
-        if(TextUtils.isEmpty(image_url)){
-            System.out.println("null");
-        }else{
-            new ImageTask(new ImageTask.CallBack(){
-                @Override
-                public void getResult(Bitmap result){
-                    holder.friend_request_img.setImageBitmap(result);
-                }
-            }).execute(image_url);
-        }
+        holder.friend_request_img.setImageResource(Utils.portraitselect(image_url));
         return view;
     }
 

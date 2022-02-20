@@ -1,5 +1,6 @@
 package com.example.azzzqz;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -7,12 +8,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +29,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.azzzqz.WebSocket.MyWebSocket;
 import com.example.azzzqz.Fragment.DynamicFragment;
 import com.example.azzzqz.Fragment.FriendFragment;
 import com.example.azzzqz.Fragment.MsgFragment;
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton[] dots=new RadioButton[3];
     private ArrayList<String> tab_title_list = new ArrayList<>();//存放标签页标题
     private ArrayList<Fragment> fragment_list = new ArrayList<>();//存放ViewPager容器下的Fragment
+    private KillBroadcastReceiver killBroadcastReceiver=new KillBroadcastReceiver();
     //加载布局的代码
     CircleImageView tx;
     DrawerLayout drawer;
@@ -53,45 +59,42 @@ public class MainActivity extends AppCompatActivity {
     //小菜单控件
     ImageView im_exit;
     TextView minmain_username,minmain_account;
+    CircleImageView userimage;
     //spf数据库
     SharedPreferences spf;
     SharedPreferences.Editor editor;
-    //判断socket通信是否需要开启
-    Boolean socket_flag=true;
     //个人数据
     String account;
+    String portrait;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
         account=spf.getString("account","");
+        portrait=spf.getString("portrait","test");
         minmain_username= findViewById(R.id.minmain_username);
         minmain_account=findViewById(R.id.minmain_account);
         main_title=findViewById(R.id.main_title);
         minmain_username.setText(spf.getString("username",""));
         minmain_account.setText("蹦蹦号: "+account);
+        userimage=findViewById(R.id.userImage);
         im_exit=findViewById(R.id.im_exit);
         tx=findViewById(R.id.test);
+        if(portrait.equals("test")){
+            userimage.setImageResource(R.drawable.test);
+            tx.setImageResource(R.drawable.test);
+        }else if(portrait.equals("test2")){
+            userimage.setImageResource(R.drawable.test2);
+            tx.setImageResource(R.drawable.test2);
+        }else if(portrait.equals("test3")){
+            userimage.setImageResource(R.drawable.test3);
+            tx.setImageResource(R.drawable.test3);
+        }
         drawer=findViewById(R.id.drawer);
-        /**
-         * 创建线程连接websocket获取数据
-         */
-//        new Thread(new Runnable() {//开启一个心跳，同时回好友申请的数量
-//            @Override
-//            public void run() {
-//                MyWebSocket socket=new MyWebSocket();
-//                while(socket_flag){
-//                    try {
-//                        Thread.sleep(10000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    socket.send(account);
-//                }
-//                socket.close();
-//            }
-//        }).start();
+        //动态注册广播接收器
+        IntentFilter intentFilter=new IntentFilter("com.example.azzzqz.Kill");
+        registerReceiver(killBroadcastReceiver,intentFilter);
         /**
          * 主菜单
          */
@@ -109,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.navself:
-                        Intent intent=new Intent(MainActivity.this,SelfActivity.class);
+                        Intent intent=new Intent(MainActivity.this, UserinfoActivity.class);
+                        intent.putExtra("usertype",1);
                         startActivity(intent);
                         break;
                     case R.id.navmoney:
@@ -268,10 +272,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public class KillBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        socket_flag=false;
+        unregisterReceiver(killBroadcastReceiver);
     }
 
     public void setCurDot(int index) {

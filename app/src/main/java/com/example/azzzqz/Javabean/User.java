@@ -2,10 +2,35 @@ package com.example.azzzqz.Javabean;
 
 public class User {
     private String portrait_img;
-    private String username,password;
+    private String username,password,sex,phone;
     private int account;
     private int result;
-    private int frireq_count;
+    private int age;
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -44,13 +69,5 @@ public class User {
 
     public void setPortrait_img(String portrait_img) {
         this.portrait_img = portrait_img;
-    }
-
-    public void setFrireq_count(int frireq_count) {
-        this.frireq_count = frireq_count;
-    }
-
-    public int getFrireq_count() {
-        return frireq_count;
     }
 }

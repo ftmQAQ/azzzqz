@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
 }
-
+apply plugin: 'com.mob.sdk'
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -34,6 +34,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    MobSDK {
+        appKey "355b3b6951ba7"
+        appSecret "44cd4c16b0d78d56fce947754a4cf56b"
+        SMSSDK {}
     }
 }
 

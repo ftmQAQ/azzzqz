@@ -1,7 +1,14 @@
 package com.example.azzzqz.WebSocket;
 
+import android.content.Intent;
 import android.util.Log;
 
+import com.example.azzzqz.Database.MyDatabaseHelper;
+import com.example.azzzqz.Javabean.Msg;
+import com.example.azzzqz.Service.MyService;
+import com.example.azzzqz.Utils.Utils;
+
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -10,23 +17,22 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-public class MyWebSocket {
+public class MsgWebSocket {
     private WebSocket mSocket;
-    private String msg="";
+    private String hint="";
     private Boolean flag=true;
-    private String TAG="MyWebSocket";
+    private String TAG="MSGWebSocket";
     private String wsurl;
     private Boolean SocketSwitch=false;//判断连接是否开启
     private Boolean return_flag=false; //判断send方法是否可以return
-
+    private String msgs=null;
     public Boolean getSocketSwitch() {
         return SocketSwitch;
     }
 
-    public MyWebSocket(String url) {
+    public MsgWebSocket(String url,String account) {
         wsurl=url;
-        start(url);
-        SocketSwitch=true;
+        start(wsurl);
     }
 
     public void setReturn_flag(Boolean return_flag) {
@@ -36,21 +42,26 @@ public class MyWebSocket {
     public String send(String text){
         try {
             mSocket.send(text);
+            while(!return_flag){
+                try {
+                    Log.i(TAG+"reflag","更新中");
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }catch (Exception exception){
             Log.i(TAG,"发送失败");
+            hint=null;
         }
-        int count=0;
-        while(!return_flag&&count<10){
-            try {
-                Log.i(TAG+"reflag","更新中");
-                count++;
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return_flag=false;
-        return msg;
+        return hint;
+    }
+
+    public String getMsgs(){
+        return msgs;
+    }
+    public void setMsgs(String text){
+        msgs=text;
     }
 
     public void close(){
@@ -71,7 +82,7 @@ public class MyWebSocket {
         //定义request
         Request request = new Request.Builder().url(url).build();
         //绑定回调接口
-        mOkHttpClient.newWebSocket(request, new EchoWebSocketListener());
+        mOkHttpClient.newWebSocket(request, new MsgWebSocket.EchoWebSocketListener());
         mOkHttpClient.dispatcher().executorService().shutdown();
     }
 
@@ -79,19 +90,23 @@ public class MyWebSocket {
      * 内部类，监听web socket回调
      * */
     private final class EchoWebSocketListener extends WebSocketListener {
-
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             super.onOpen(webSocket, response);
-
+            SocketSwitch=true;
             mSocket = webSocket;    //实例化web socket
         }
 
         @Override
         public void onMessage(WebSocket webSocket, String text) {
             super.onMessage(webSocket, text);
-            msg=text;
-            return_flag=true;
+            Log.i(TAG,text);
+            if(text.equals("on") || text.equals("noton")){
+                hint=text;
+                return_flag=true;
+            }else{
+                msgs=text;
+            }
             Log.i(TAG+"服务器返回",text);
         }
 

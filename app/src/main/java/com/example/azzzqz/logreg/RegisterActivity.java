@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "两次输入密码不相同", Toast.LENGTH_SHORT).show();
                 }else if(phone.isEmpty()){
                     Toast.makeText(RegisterActivity.this,"手机号不能为空",Toast.LENGTH_LONG).show();
-                }else if(Utils.checkTel(phone)==false){
+                }else if(!Utils.checkTel(phone)){
                     Toast.makeText(RegisterActivity.this,"请输入有效的手机号",Toast.LENGTH_LONG).show();
                 }else if(!phone.equals(phoneyzm)){
                     Log.i(phone,phoneyzm);

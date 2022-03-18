@@ -90,8 +90,12 @@ public class AddFriendActivity extends AppCompatActivity {
             new AddFriendTask(new AddFriendTask.CallBack(){
                 @Override
                 public void getResult(User result) {
-                    list.add(result);
-                    adapter.notifyDataSetChanged();
+                    if(result.getResult()!=0){
+                        list.add(result);
+                        adapter.notifyDataSetChanged();
+                    }else{
+                        Toast.makeText(AddFriendActivity.this, "没有这样子的人喔", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }).execute(url+"account="+account+"&fri_account="+search_account);
             isLoading=true;

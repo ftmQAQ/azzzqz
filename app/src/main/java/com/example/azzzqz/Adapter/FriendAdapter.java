@@ -59,7 +59,7 @@ public class FriendAdapter extends ArrayAdapter {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getContext(), UserinfoActivity.class);
-                intent.putExtra("account",user.getAccount());
+                intent.putExtra("friaccount",user.getAccount());
                 intent.putExtra("username",user.getUsername());
                 intent.putExtra("userinfo_img",user.getPortrait_img());
                 intent.putExtra("usertype",2);

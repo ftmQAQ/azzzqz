@@ -92,7 +92,6 @@ public class MyWebSocket {
             super.onMessage(webSocket, text);
             msg=text;
             return_flag=true;
-            Log.i(TAG+"服务器返回",text);
         }
 
         @Override

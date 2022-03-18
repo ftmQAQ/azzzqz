@@ -1,5 +1,8 @@
 package com.example.azzzqz.Fragment;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,8 +10,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
@@ -21,12 +26,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.azzzqz.Adapter.MainMsgAdapter;
+import com.example.azzzqz.ChatActivity;
 import com.example.azzzqz.Database.MyDatabaseHelper;
 import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.User;
-import com.example.azzzqz.Receiver.MsgPeopleReciver;
-import com.example.azzzqz.Receiver.UpDataMsgReciver;
 import com.example.azzzqz.Service.FriendService;
 import com.example.azzzqz.Service.MsgService;
 import com.example.azzzqz.Utils.Utils;
@@ -40,7 +44,9 @@ public class MsgFragment extends Fragment {
     private String url="http://msg.ftmqaq.cn/get.php?";
     private ArrayList<Msg> backmsg=new ArrayList<>();
     private String proposer,recipient,portrait;
+    private String recing="0";
     private MainMsgAdapter adapter;
+    public static final String NOTIFICATION_SERVICE = "notification";
     ListView msg_friends;
     TextView msg_hint;
     //利用spf获取当前登录用户值
@@ -58,6 +64,7 @@ public class MsgFragment extends Fragment {
     private MsgBroadcastReceiver msgBroadcastReceiver=new MsgBroadcastReceiver();
     //聊天对象和chatactivity通信
     ChatBroadcastReceiver chatBroadcastReceiver=new ChatBroadcastReceiver();
+    RecBroadcastReceiver recBroadcastReceiver=new RecBroadcastReceiver();
     //ServiceConnection用于和msgService相关联
     private ServiceConnection connection=new ServiceConnection() {
         @Override
@@ -108,6 +115,9 @@ public class MsgFragment extends Fragment {
         //动态注册广播接收器_chat发送的msg
         IntentFilter chatintentFilter=new IntentFilter("com.example.azzzqz.chattomsg");
         getActivity().registerReceiver(chatBroadcastReceiver,chatintentFilter);
+        //动态注册广播接收器rec发送的msg
+        IntentFilter recintentFilter=new IntentFilter("com.example.azzzqz.chattomsgrec");
+        getActivity().registerReceiver(recBroadcastReceiver,recintentFilter);
         adapter=new MainMsgAdapter(getActivity(),R.layout.friend,backmsg,recipient);
         msg_friends=view.findViewById(R.id.msg_friends);
         msg_hint=view.findViewById(R.id.msg_hint);
@@ -148,6 +158,13 @@ public class MsgFragment extends Fragment {
         }
     }
 
+    public class RecBroadcastReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            recing=intent.getStringExtra("recipient");
+        }
+    }
+
     public class MsgBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -156,12 +173,14 @@ public class MsgFragment extends Fragment {
                 msg_hint.setVisibility(View.GONE);
             }else if(msg.equals("noton")){
                 msg_hint.setVisibility(View.VISIBLE);
-            }else if(msg.equals("down")){
-                Intent intent1=new Intent(getContext(), LoginActivity.class);
+            }else if(msg.equals("down")) {
+                Intent intent1 = new Intent(getContext(), LoginActivity.class);
                 Toast.makeText(context, "异地登录，强制下线", Toast.LENGTH_SHORT).show();
-                intent1.putExtra("islogin",1);
+                intent1.putExtra("islogin", 1);
                 startActivity(intent1);
                 getActivity().finish();
+            }else if(msg.equals("nofri")){
+                Toast.makeText(context, "你们还不是好友别发了", Toast.LENGTH_SHORT).show();
             }else{
                 ArrayList<Msg> result= Utils.getmsgparse(msg);
                 for (int j = 0; j <result.size() ; j++) {
@@ -193,11 +212,33 @@ public class MsgFragment extends Fragment {
     }
     public void sendMsgBroadcast(Msg msg){//发送去chatactivity的广播
         //发送自定义广播
-        Intent intent=new Intent("com.example.azzzqz.msgtochat");
-        intent.putExtra("date",msg.getDate());
-        intent.putExtra("proposer",msg.getProposer());
-        intent.putExtra("msg",msg.getMsg());
-        getActivity().sendBroadcast(intent);
+        if(msg.getProposer()==Integer.valueOf(recing)){
+            Intent intent=new Intent("com.example.azzzqz.msgtochat");
+            intent.putExtra("date",msg.getDate());
+            intent.putExtra("proposer",msg.getProposer());
+            intent.putExtra("msg",msg.getMsg());
+            getActivity().sendBroadcast(intent);
+        }else{
+            Intent intent=new Intent(getContext(),ChatActivity.class);
+            intent.putExtra("date",msg.getDate());
+            intent.putExtra("account",String.valueOf(msg.getProposer()));
+            intent.putExtra("msg",msg.getMsg());
+            int notifyId = (int) System.currentTimeMillis();
+            PendingIntent pendingIntent=PendingIntent.getActivity(getContext(),notifyId,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationManager manager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new NotificationCompat.Builder(getContext(), "chat")
+                    .setAutoCancel(true)
+                    .setContentTitle(String.valueOf(msg.getProposer()))
+                    .setContentText(msg.getMsg())
+                    .setWhen(System.currentTimeMillis())
+                    .setSmallIcon(R.drawable.keli)
+                    //设置红色
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.keli))
+                    .setContentIntent(pendingIntent)
+                    .build();
+            manager.notify(1, notification);
+        }
+
     }
     @Override
     public void onDestroy() {
@@ -207,5 +248,6 @@ public class MsgFragment extends Fragment {
         getActivity().stopService(intent);
         getActivity().unregisterReceiver(msgBroadcastReceiver);
         getActivity().unregisterReceiver(chatBroadcastReceiver);
+        getActivity().unregisterReceiver(recBroadcastReceiver);
     }
 }

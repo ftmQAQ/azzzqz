@@ -44,13 +44,26 @@
                 android:textSize="15dp"
                 android:text=""/>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/fri_other_msg"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginLeft="10dp"
-            android:text=""
-            android:layout_weight="0.6"/>
+            android:orientation="horizontal"
+            android:layout_weight="0.6">
+            <TextView
+                android:id="@+id/fri_other_msg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:text=""/>
+            <TextView
+                android:id="@+id/new_count"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="#ff0000"
+                android:text=""/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

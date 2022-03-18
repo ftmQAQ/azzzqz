@@ -107,6 +107,7 @@
                 android:visibility="gone"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/ll_userupdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -149,6 +150,20 @@
 
 
         </LinearLayout>
-
+        <LinearLayout
+            android:id="@+id/ll_delfri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/bt_delfri"
+                android:text="删除好友"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

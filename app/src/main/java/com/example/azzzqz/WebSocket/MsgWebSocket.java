@@ -1,14 +1,7 @@
 package com.example.azzzqz.WebSocket;
 
-import android.content.Intent;
 import android.util.Log;
 
-import com.example.azzzqz.Database.MyDatabaseHelper;
-import com.example.azzzqz.Javabean.Msg;
-import com.example.azzzqz.Service.MyService;
-import com.example.azzzqz.Utils.Utils;
-
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -107,7 +100,6 @@ public class MsgWebSocket {
             }else{
                 msgs=text;
             }
-            Log.i(TAG+"服务器返回",text);
         }
 
         @Override

@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.example.azzzqz.Fragment.DynamicFragment;
 import com.example.azzzqz.Fragment.FriendFragment;
 import com.example.azzzqz.Fragment.MsgFragment;
+import com.example.azzzqz.Utils.Utils;
 import com.example.azzzqz.logreg.LoginActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> tab_title_list = new ArrayList<>();//存放标签页标题
     private ArrayList<Fragment> fragment_list = new ArrayList<>();//存放ViewPager容器下的Fragment
     private KillBroadcastReceiver killBroadcastReceiver=new KillBroadcastReceiver();
+    private UpBroadcastReceiver upBroadcastReceiver=new UpBroadcastReceiver();
     //加载布局的代码
     CircleImageView tx;
     DrawerLayout drawer;
@@ -71,30 +73,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
-        account=spf.getString("account","");
-        portrait=spf.getString("portrait","test");
         minmain_username= findViewById(R.id.minmain_username);
         minmain_account=findViewById(R.id.minmain_account);
         main_title=findViewById(R.id.main_title);
-        minmain_username.setText(spf.getString("username",""));
-        minmain_account.setText("蹦蹦号: "+account);
         userimage=findViewById(R.id.userImage);
         im_exit=findViewById(R.id.im_exit);
         tx=findViewById(R.id.test);
-        if(portrait.equals("test")){
-            userimage.setImageResource(R.drawable.test);
-            tx.setImageResource(R.drawable.test);
-        }else if(portrait.equals("test2")){
-            userimage.setImageResource(R.drawable.test2);
-            tx.setImageResource(R.drawable.test2);
-        }else if(portrait.equals("test3")){
-            userimage.setImageResource(R.drawable.test3);
-            tx.setImageResource(R.drawable.test3);
-        }
         drawer=findViewById(R.id.drawer);
+        //加载数据
+        loadinfo();
         //动态注册广播接收器
         IntentFilter intentFilter=new IntentFilter("com.example.azzzqz.Kill");
         registerReceiver(killBroadcastReceiver,intentFilter);
+        IntentFilter intentFilter1=new IntentFilter("com.example.azzzqz.userinfotomain");
+        registerReceiver(upBroadcastReceiver,intentFilter1);
         /**
          * 主菜单
          */
@@ -277,6 +269,23 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             finish();
         }
+    }
+
+    public class UpBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadinfo();
+        }
+    }
+
+    private void loadinfo(){
+        spf=getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
+        account=spf.getString("account","");
+        portrait=spf.getString("portrait","test");
+        minmain_username.setText(spf.getString("username",""));
+        minmain_account.setText("蹦蹦号: "+account);
+        tx.setImageResource(Utils.portraitselect(portrait));
+        userimage.setImageResource(Utils.portraitselect(portrait));
     }
 
     @Override

@@ -8,9 +8,9 @@ import com.example.azzzqz.Utils.Utils;
 import okhttp3.Response;
 
 public class UpPhoneTask extends AsyncTask<String,Void, Boolean> {
-    UpPhoneTask.CallBack back;
+    CallBack back;
 
-    public UpPhoneTask(UpPhoneTask.CallBack back) {
+    public UpPhoneTask(CallBack back) {
         this.back = back;
     }
 

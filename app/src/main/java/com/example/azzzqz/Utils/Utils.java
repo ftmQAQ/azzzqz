@@ -82,6 +82,10 @@ public class Utils {
         ArrayList<User> result=new ArrayList<>();
         try {
             JSONObject object=new JSONObject(data);
+            int x=object.getInt("result");
+            if(x==0){
+                return null;
+            }
             JSONArray object2=object.getJSONArray("data");
             for(int i=0;i<object2.length();i++){
                 JSONObject objectIn=object2.getJSONObject(i);
@@ -109,9 +113,9 @@ public class Utils {
             String username=object.getString("username");
             int account=object.getInt("account");
             String img=object.getString("portrait");
+            result.setUsername(username);
             result.setResult(re);
             result.setAccount(account);
-            result.setUsername(username);
             result.setPortrait_img(img);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -257,22 +261,49 @@ public class Utils {
         return result;
     }
 
+    //更新头像结果解析
+    public static boolean upportrait(String data){
+        Boolean result=false;
+        try {
+            JSONObject object=new JSONObject(data);
+            int upportrait=object.getInt("result");
+            if(upportrait==1){
+                result=true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    //删除好友结果解析
+    public static User updelfriend(String data){
+        User result=new User();
+        try {
+            JSONObject object=new JSONObject(data);
+            int updel=object.getInt("result");
+            result.setResult(updel);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     //个人数据解析
     public static User userinfoparse(String data){
         User user=new User();
         try {
             Log.i("Utils",data);
             JSONObject object=new JSONObject(data);
-            String username=object.getString("username");
             String sex=object.getString("sex");
             int age=object.getInt("age");
             String phone=object.getString("phone");
             String img=object.getString("portrait");
-            user.setUsername(username);
+            String username=object.getString("username");
             user.setPortrait_img(img);
             user.setAge(age);
             user.setPhone(phone);
             user.setSex(sex);
+            user.setUsername(username);
         }catch(JSONException e) {
             e.printStackTrace();
         }
@@ -287,6 +318,10 @@ public class Utils {
             return R.drawable.test2;
         }else if(text.equals("test3")){
             return R.drawable.test3;
+        }else if(text.equals("test4")){
+            return R.drawable.test4;
+        }else if(text.equals("test5")){
+            return R.drawable.test5;
         }else{
             return R.drawable.test;
         }

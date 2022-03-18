@@ -38,15 +38,16 @@
                     android:gravity="center|left"
                     android:layout_marginLeft="10dp"
                     android:text="好友请求"/>
+
                 <TextView
                     android:id="@+id/friendrequest_count"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:textSize="15dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:gravity="center|right"
-                    android:layout_marginLeft="10dp"
-                    android:text="你有1个好友请求"/>
+                    android:text="你有1个好友请求"
+                    android:textSize="15dp" />
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>

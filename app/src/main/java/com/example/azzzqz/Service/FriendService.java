@@ -69,7 +69,6 @@ public class FriendService extends Service {
                             send_data = "{\"account\":" + account + ",\"handle\":\"all\"}";
                             temp_data = socket.send(send_data);
                             socket.setReturn_flag(false);
-                            Log.i(TAG+"服务器返回",temp_data);
                             ArrayList<User> result = Utils.friendparse(temp_data);
                             FriendlistUpdata(context,result);
                             Log.i(TAG,temp_data);
@@ -82,12 +81,6 @@ public class FriendService extends Service {
                                 Log.i(TAG,friendcount+"");
                             }
                             sendFirendBroadcast(false);
-                        }
-                    }
-                    if(FS_flag){//如果service被销毁结束该线程
-                        cancel();
-                        if(socket!=null){
-                            socket.close();
                         }
                     }
                 }
@@ -104,6 +97,11 @@ public class FriendService extends Service {
             sendBroadcast(intent);
         }
 
+        public void TaskStop(){
+            task.cancel();
+            socket.close();
+        }
+
         public void loadserverfriendData(Context context) {
             if(isLoading){
                 isLoading=false;
@@ -111,23 +109,62 @@ public class FriendService extends Service {
                 new FriendTask(new FriendTask.CallBack(){
                     @Override
                     public void getResult(ArrayList<User> result) {
+                        friendlist.clear();
                         FriendlistUpdata(context,result);
                     }
                 }).execute(url+"account="+account);
                 isLoading=true;
             }
         }
+
+        public void setCounter(){
+            counter=11;
+        }
+
         public void FriendlistUpdata(Context context,ArrayList<User> result) {//更改本地数据库的数据
             myDatabaseHelper=new MyDatabaseHelper(context);
             myDatabaseHelper.open(account);//打开本地数据库
-            friendlist.addAll(result);
+            if(result!=null){
+                friendlist.addAll(result);
+            }
+            User[] users=myDatabaseHelper.querryfriendAll();
             if(friendlist.size()!=0){
                 for(int i = 0; i<friendlist.size(); i++){
                     User[] userss=myDatabaseHelper.querryfriend(friendlist.get(i).getAccount());
                     if(userss==null){
                         myDatabaseHelper.inserfriend(account,friendlist.get(i));
+                        if(myDatabaseHelper.querryfriend_info(friendlist.get(i).getAccount())==null){
+                            myDatabaseHelper.inserfriend_info(account,friendlist.get(i));
+                        }else{
+                            myDatabaseHelper.updatafriend(account,friendlist.get(i));
+                        }
                     }else{
                         myDatabaseHelper.updatafriend(account,friendlist.get(i));
+                    }
+                }
+                Boolean flag=false;
+                if(users!=null){
+                    for(User user:users){
+                        int fri_list_account=user.getAccount();
+                        for (int i = 0; i < friendlist.size(); i++) {
+                            if(fri_list_account==friendlist.get(i).getAccount()){
+                                flag=true;
+                                break;
+                            }
+                        }
+                        if(!flag){
+                            myDatabaseHelper.delfriend(fri_list_account);
+                            myDatabaseHelper.delshowminfriend(fri_list_account);
+                        }
+                        flag=false;
+                    }
+                }
+            }else{
+                if(users!=null){
+                    for(User user:users){
+                        int fri_list_account=user.getAccount();
+                        myDatabaseHelper.delfriend(fri_list_account);
+                        myDatabaseHelper.delshowminfriend(fri_list_account);
                     }
                 }
             }

@@ -77,7 +77,9 @@ public class AddFriendAdapter extends ArrayAdapter{
         });
         //给图片控件设置要显示的图片
         String image_url=user.getPortrait_img();
-        holder.iv_image.setImageResource(Utils.portraitselect(image_url));
+        if(image_url!=null){
+            holder.iv_image.setImageResource(Utils.portraitselect(image_url));
+        }
         return view;
     }
     public class ViewHolder{

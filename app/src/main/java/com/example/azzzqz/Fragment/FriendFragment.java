@@ -64,7 +64,9 @@ public class FriendFragment extends Fragment {
     }
     //新建service的内部类中的control
     private FriendService.FriendControl control=null;
+    //创建广播接收器
     private FriendBroadcastReceiver friendBroadcastReceiver=new FriendBroadcastReceiver();
+    private InfotoFFBroadcastReceiver infotoFFBroadcastReceiver=new InfotoFFBroadcastReceiver();
     //ServiceConnection用于和friendService相关联
     private ServiceConnection connection=new ServiceConnection() {
         @Override
@@ -84,6 +86,7 @@ public class FriendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_friend, container, false);
+        Log.i(TAG,"oncreate");
         //////////////////////数据库创建///////////////////////////
         spf=getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);//打开本地存储的spf数据
         account=spf.getString("account","");
@@ -103,6 +106,8 @@ public class FriendFragment extends Fragment {
         //动态注册广播接收器
         IntentFilter intentFilter=new IntentFilter("com.example.azzzqz.Friend");
         getActivity().registerReceiver(friendBroadcastReceiver,intentFilter);
+        IntentFilter intentFilter1=new IntentFilter("com.example.azzzqz.infotoff");
+        getActivity().registerReceiver(infotoFFBroadcastReceiver,intentFilter1);
         //设置连接传递的account
         getActivity().startService(intent);
         friend_request.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +144,6 @@ public class FriendFragment extends Fragment {
             Boolean updata_flag=intent.getBooleanExtra("updata_flag",false);
             if(updata_flag){
                 loadclientfriendData();
-                Toast.makeText(context, "好友列表刷新成功", Toast.LENGTH_SHORT).show();
                 shuaxin.setEnabled(true);
             }
             if(friendcount>0){
@@ -152,11 +156,25 @@ public class FriendFragment extends Fragment {
         }
     }
 
+    public class InfotoFFBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int info=intent.getIntExtra("info",0);
+            if(info==1){
+                control.loadserverfriendData(getContext());
+            }
+        }
+    }
+
     private void loadclientfriendData() {
         User[] users=myDatabaseHelper.querryfriendAll();
-        Log.i(TAG,"查找数据库更新好友列表");
         list.clear();
         if(users==null){
+            try {
+                adapter.notifyDataSetChanged();
+            }catch (Exception exception){
+                Log.i(TAG,"异常");
+            }
             return;
         }else{
             for(User usersave:users){
@@ -173,14 +191,16 @@ public class FriendFragment extends Fragment {
             }
         }
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.i(TAG,"onDestroy");
         flag=false;
+        control.TaskStop();
         getActivity().unbindService(connection);
         getActivity().stopService(intent);
         getActivity().unregisterReceiver(friendBroadcastReceiver);
+        getActivity().unregisterReceiver(infotoFFBroadcastReceiver);
+
     }
 }

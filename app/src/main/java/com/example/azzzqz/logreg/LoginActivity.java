@@ -40,10 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        spf= getSharedPreferences("user", Context.MODE_PRIVATE);;//打开本地存储的spf数据
+        spf= getSharedPreferences("user", Context.MODE_PRIVATE);//打开本地存储的spf数据
         Boolean is_login=false;//判断是否有过登录，如果有直接进入主界面
         is_login=spf.getBoolean("is_login",false);
-        Log.i("log", String.valueOf(is_login));
         Intent intent1=getIntent();
         int islogin=intent1.getIntExtra("islogin",0);
         if(is_login&&islogin==0){

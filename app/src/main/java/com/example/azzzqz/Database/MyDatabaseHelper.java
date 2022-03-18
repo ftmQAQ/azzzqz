@@ -29,6 +29,11 @@ public class MyDatabaseHelper {
                 "username text," +
                 "flag integer)";
 
+        public static final String FRIEND_INFO = "create table friend_info(" +
+                "account integer primary key," +
+                "username text," +
+                "portrait text)";
+
         public MyDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
 
@@ -38,6 +43,7 @@ public class MyDatabaseHelper {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_FRIEND);
             db.execSQL(CREATE_SHOW_FRIEND);
+            db.execSQL(FRIEND_INFO);
         }
 
         @Override
@@ -69,12 +75,22 @@ public class MyDatabaseHelper {
         return db.insert("friend",null,values);
     }
 
+    public long inserfriend_info(String account,User user){
+        open(account);
+        ContentValues values2 = new ContentValues();
+        values2.put("account",user.getAccount());
+        values2.put("username",user.getUsername());
+        values2.put("portrait",user.getPortrait_img());
+        return db.insert("friend_info",null,values2);
+    }
+
     public long updatafriend(String account,User user){
         open(account);
         ContentValues values = new ContentValues();
         values.put("account",user.getAccount());
         values.put("username",user.getUsername());
         values.put("portrait",user.getPortrait_img());
+        db.update("friend_info",values,"account=?",new String[]{String.valueOf(user.getAccount())});
         return db.update("friend",values,"account=?",new String[]{String.valueOf(user.getAccount())});
     }
 
@@ -83,9 +99,18 @@ public class MyDatabaseHelper {
         return ConverToUser(result);
     }
 
+    public User[] querryfriend_info(int account){//寻找好友表中的特定好友信息
+        Cursor result=db.query("friend_info",null,"account=?",new String[]{String.valueOf(account)},null,null,null);
+        return ConverToUser(result);
+    }
+
     public User[] querryfriend(int account){//寻找好友表中的特定好友
         Cursor result=db.query("friend",null,"account=?",new String[]{String.valueOf(account)},null,null,null);
         return ConverToUser(result);
+    }
+
+    public long delfriend(int account){
+        return db.delete("friend","account=?",new String[]{String.valueOf(account)});
     }
 
     //获取需要显示的好友列表
@@ -118,6 +143,12 @@ public class MyDatabaseHelper {
             return db.insert("show_friend",null,values);
         }
     }
+
+    public long delshowminfriend(int account){
+        return db.delete("show_friend","account=?",new String[]{String.valueOf(account)});
+    }
+
+
 
     /**
      *

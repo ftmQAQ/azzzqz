@@ -23,13 +23,8 @@ import android.widget.Toast;
 
 import com.example.azzzqz.Adapter.ChatAdapter;
 import com.example.azzzqz.Database.MyDatabaseHelper;
-import com.example.azzzqz.Fragment.MsgFragment;
 import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.User;
-import com.example.azzzqz.Receiver.MsgReciver;
-import com.example.azzzqz.Task.PutMsgTask;
-import com.example.azzzqz.Utils.Utils;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,12 +66,13 @@ public class ChatActivity extends AppCompatActivity {//conprovid n m网格
         //////////////////////////////////////////////////////////
         Intent intent=getIntent();
         recipient=intent.getStringExtra("account");//获取recipient，和我发消息的对象
-        left_img=intent.getStringExtra("portrait");
         dbHelper.creatfritable(recipient);
-        User[] users=dbHelper.querryfriend(Integer.valueOf(recipient));
+        User[] users=dbHelper.querryfriend_info(Integer.valueOf(recipient));
+        left_img=users[0].getPortrait_img();
         friend_msg_name=findViewById(R.id.friend_msg_name);
         friend_msg_name.setText(users[0].getUsername());//设置用户名
         /////////////////////////加载聊天记录///////////////////////
+        send_recipient(recipient);//告诉msg我在和谁聊天
         try{
             Msg[] msgall=dbHelper.querryMsgAll(recipient);
             for(int i=0;i<msgall.length;i++){
@@ -100,27 +96,28 @@ public class ChatActivity extends AppCompatActivity {//conprovid n m网格
             @Override
             public void onClick(View v) {
                 msgstr=msg_text.getText().toString();
-                Msg msg=new Msg();
-                msg.setMsg(msgstr);
-                msg.setProposer(Integer.parseInt(recipient));
-                msg.setType(1);
-                msg.setRecipient(Integer.parseInt(proposer));
-                Date date=new Date();
-                DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time=format.format(date);
-                msg.setDate(time);
-                dbHelper.insertMsg(msg);
-                dbHelper.updatafriendnewmsgcount(proposer,recipient,1);
-                msgs.add(msg);
-                chatAdapter.notifyItemInserted(msgs.size()-1);
-                Intent intent=new Intent("com.example.azzzqz.chattomsg");
-                intent.putExtra("data",msgstr);
-                intent.putExtra("recipient",recipient);
-                intent.putExtra("date",time);
-                sendBroadcast(intent);
+                if(!msgstr.equals("")){
+                    Msg msg=new Msg();
+                    msg.setMsg(msgstr);
+                    msg.setProposer(Integer.parseInt(recipient));
+                    msg.setType(1);
+                    msg.setRecipient(Integer.parseInt(proposer));
+                    Date date=new Date();
+                    DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String time=format.format(date);
+                    msg.setDate(time);
+                    dbHelper.insertMsg(msg);
+                    msgs.add(msg);
+                    chatAdapter.notifyItemInserted(msgs.size()-1);
+                    Intent intent=new Intent("com.example.azzzqz.chattomsg");
+                    intent.putExtra("data",msgstr);
+                    intent.putExtra("recipient",recipient);
+                    intent.putExtra("date",time);
+                    sendBroadcast(intent);
 //                putmsg();
-                msg_text.setText("");
-                recyclerView.scrollToPosition(chatAdapter.getItemCount()-1);
+                    msg_text.setText("");
+                    recyclerView.scrollToPosition(chatAdapter.getItemCount()-1);
+                }
             }
         });
         IntentFilter msgintentFilter=new IntentFilter("com.example.azzzqz.msgtochat");
@@ -140,13 +137,20 @@ public class ChatActivity extends AppCompatActivity {//conprovid n m网格
                 recyclerView.setAdapter(chatAdapter);
                 recyclerView.scrollToPosition(chatAdapter.getItemCount()-1);
             }
-
         }
+    }
+
+    public void send_recipient(String text){
+        Intent intent=new Intent("com.example.azzzqz.chattomsgrec");
+        intent.putExtra("recipient",text);
+        sendBroadcast(intent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG,"onDestroy");
+        send_recipient("0");
+        getApplicationContext().unregisterReceiver(chatBroadcastReceiver);
     }
 }

@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Azzzqz"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RePasswordActivity"></activity>
+        <activity android:name=".RePortraitActivity"></activity>
+        <activity android:name=".RePasswordActivity" />
         <activity android:name=".PhoneActivity" />
 
         <service
@@ -27,10 +28,6 @@
             android:exported="true" />
         <service
             android:name=".Service.MsgService"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".Service.MyService"
             android:enabled="true"
             android:exported="true" />
 

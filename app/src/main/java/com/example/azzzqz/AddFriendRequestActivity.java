@@ -42,8 +42,6 @@ public class AddFriendRequestActivity extends AppCompatActivity {
         refri_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(AddFriendRequestActivity.this,MainActivity.class);
-                startActivity(intent);
                 finish();
             }
         });

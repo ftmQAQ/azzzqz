@@ -2,6 +2,7 @@ package com.example.azzzqz.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import com.example.azzzqz.Database.MyDatabaseHelper;
 import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.User;
-import com.example.azzzqz.Task.GetNameTask;
 import com.example.azzzqz.Utils.Utils;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class MainMsgAdapter extends ArrayAdapter {
         myDatabaseHelper=new MyDatabaseHelper(getContext());
         myDatabaseHelper.open(own_account);//打开本地数据库
         User fri=new User();
-        fri=myDatabaseHelper.querryfriend(data.get(position).getProposer())[0];//获取好友信息
+        fri=myDatabaseHelper.querryfriend_info(data.get(position).getProposer())[0];//获取好友信息
         if(convertView==null){
             //getContext()获取当前上下文
             //LayoutInflater.from(getContext())从当前上下文中获取布局填充器
@@ -72,6 +72,7 @@ public class MainMsgAdapter extends ArrayAdapter {
         holder.fri_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("XXXX",fri_portrait);
                 Intent intent=new Intent(getContext(), ChatActivity.class);
                 intent.putExtra("account",String.valueOf(data.get(position).getProposer()));
                 intent.putExtra("username",fri_name);
@@ -90,23 +91,6 @@ public class MainMsgAdapter extends ArrayAdapter {
             friend_name=view.findViewById(R.id.friend_name);
             friend_img=view.findViewById(R.id.friend_img);
             fri_item=view.findViewById(R.id.fri_item);
-        }
-    }
-
-    private void loadname(TextView fri) {
-        if(isLoading){
-            isLoading=false;
-            //执行异步任务，加载数据
-            new GetNameTask(new GetNameTask.CallBack(){
-                @Override
-                public void getResult(User result) {
-                    fri_name= result.getUsername();
-                    fri.setText(fri_name);
-                }
-            }).execute(url+"account="+account);
-            isLoading=true;
-        }else{
-
         }
     }
 }

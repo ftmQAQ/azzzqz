@@ -31,7 +31,6 @@ import com.example.azzzqz.Database.MyDatabaseHelper;
 import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.Msg;
 import com.example.azzzqz.Javabean.User;
-import com.example.azzzqz.Service.FriendService;
 import com.example.azzzqz.Service.MsgService;
 import com.example.azzzqz.Utils.Utils;
 import com.example.azzzqz.logreg.LoginActivity;

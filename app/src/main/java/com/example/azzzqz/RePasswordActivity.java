@@ -25,6 +25,7 @@ import com.example.azzzqz.Utils.Utils;
 import com.example.azzzqz.logreg.LoginActivity;
 import com.example.azzzqz.logreg.RegSuccessActivity;
 import com.example.azzzqz.logreg.RegisterActivity;
+import com.mob.MobSDK;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,6 +87,7 @@ public class RePasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // 获取验证码
+                MobSDK.submitPolicyGrantResult(true,null);
                 SMSSDK.getVerificationCode("86", phone);
                 bt_pswd_yanzm.setEnabled(false);
                 bt_pswd_yanzm.setText("60秒后可重发");
@@ -169,7 +171,7 @@ public class RePasswordActivity extends AppCompatActivity {
                 }else if(yzm.isEmpty()){
                     Toast.makeText(RePasswordActivity.this,"请输入验证码",Toast.LENGTH_LONG).show();
                 }else{
-//                    SMSSDK.submitVerificationCode("86", phone, yzm);
+                    SMSSDK.submitVerificationCode("86", phone, yzm);
                     loadData();
                 }
             }

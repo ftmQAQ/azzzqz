@@ -10,9 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -120,6 +125,15 @@ public class ChatActivity extends AppCompatActivity {//conprovid n m网格
                 }
             }
         });
+//        b.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SpannableString spannableString=new SpannableString("d");
+//                ImageSpan imageSpan=new ImageSpan(ChatActivity.this, BitmapFactory.decodeResource(getResources(),R.drawable.bq1));
+//                spannableString.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                msg_text.append(spannableString);
+//            }
+//        });
         IntentFilter msgintentFilter=new IntentFilter("com.example.azzzqz.msgtochat");
         getApplicationContext().registerReceiver(chatBroadcastReceiver,msgintentFilter);
     }

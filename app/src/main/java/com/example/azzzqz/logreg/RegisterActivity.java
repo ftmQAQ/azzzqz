@@ -19,6 +19,7 @@ import com.example.azzzqz.R;
 import com.example.azzzqz.Javabean.User;
 import com.example.azzzqz.Task.RegisterTask;
 import com.example.azzzqz.Utils.Utils;
+import com.mob.MobSDK;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 phoneyzm = et_reg_phonenumber.getText().toString();
+                MobSDK.submitPolicyGrantResult(true,null);
                 if(!phoneyzm.isEmpty()){
                     if(Utils.checkTel(phoneyzm)){ //利用正则表达式获取检验手机号
                         // 获取验证码

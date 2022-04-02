@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(killBroadcastReceiver);
+        unregisterReceiver(upBroadcastReceiver);
     }
 
     public void setCurDot(int index) {
